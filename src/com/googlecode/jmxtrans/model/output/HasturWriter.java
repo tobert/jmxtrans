@@ -61,6 +61,7 @@ public class HasturWriter extends BaseOutputWriter {
 	/** */
 	public void doWrite(Query query) throws Exception {
     DatagramSocket socket = null;
+
 		try {
 			List<String> typeNames = this.getTypeNames();
 
@@ -76,7 +77,7 @@ public class HasturWriter extends BaseOutputWriter {
 						if (JmxUtils.isNumeric(values.getValue())) {
 							StringBuilder sb = new StringBuilder();
 
-              sb.append("{\"type\":\"gauge\",name\":\"");
+              sb.append("{\"type\":\"gauge\",\"name\":\"");
 							sb.append(JmxUtils.getKeyString(query, result, values, typeNames, rootPrefix));
               sb.append("\",\"value\":");
 							sb.append(values.getValue().toString());
@@ -93,13 +94,18 @@ public class HasturWriter extends BaseOutputWriter {
               DatagramPacket msg = new DatagramPacket(line.getBytes(),
                                                       line.length(),
                                                       InetAddress.getLocalHost(),
-                                                      8125);
+                                                      port);
               socket.send(msg);
 						}
 					}
 				}
 			}
-		} finally {
+		}
+    catch(Exception e) {
+      e.printStackTrace();
+      throw e;
+    }
+    finally {
       if(socket != null) {
         socket.close();
       }
